@@ -86,6 +86,8 @@ func main() {
 
 				updatedLines = append(updatedLines, updatedLine)
 				continue
+			} else {
+				newVersionCode=oldVersionCode
 			}
 			cmdLog1, err1 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
 			if err1 != nil {
