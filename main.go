@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 
 	"bufio"
 	"strings"
@@ -28,7 +29,12 @@ func main() {
 	}
 
 	newVersionCode := os.Getenv("new_version_code")
+	versionCodeOffset := os.Getenv("version_code_offset")
 	newVersionName := os.Getenv("new_version_name")
+
+	if versionCodeOffset == "" {
+		versionCodeOffset=0
+	}
 
 	log.Infof("Configs:")
 	log.Printf("- build_gradle_path: %s", buildGradlePth)
@@ -69,6 +75,7 @@ func main() {
 			if match := versionCodeRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
 				oldVersionCode := match[1]
 
+				newVersionCode+=versionCodeOffset
 				updatedLine := strings.Replace(line, oldVersionCode, newVersionCode, -1)
 				updatedVersionCodeNum++
 
@@ -79,18 +86,20 @@ func main() {
 			}
 		}
 
+		oldVersionName := 0
+		if match := versionNameRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
+			oldVersionName := match[1]
+		}
 		if newVersionName != "" {
-			if match := versionNameRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
-				oldVersionName := match[1]
+			updatedLine := strings.Replace(line, oldVersionName, newVersionName, -1)
+			updatedVersionNameNum++
 
-				updatedLine := strings.Replace(line, oldVersionName, newVersionName, -1)
-				updatedVersionNameNum++
+			log.Printf("updating line (%d): %s -> %s", lineNum, line, updatedLine)
 
-				log.Printf("updating line (%d): %s -> %s", lineNum, line, updatedLine)
-
-				updatedLines = append(updatedLines, updatedLine)
-				continue
-			}
+			updatedLines = append(updatedLines, updatedLine)
+			continue
+		} else {
+			newVersionName = oldVersionName
 		}
 
 		updatedLines = append(updatedLines, line)
@@ -105,6 +114,19 @@ func main() {
 	log.Donef("%d versionName updated", updatedVersionNameNum)
 
 	updatedBuildGradleContent := strings.Join(updatedLines, "\n")
+
+	cmdLog, err := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_FILE_PATH", "--value", buildGradlePth).CombinedOutput()
+	if err != nil {
+		logFail("Failed to expose output with envman, error: %#v | output: %s", err, cmdLog)
+	}
+	cmdLog, err := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
+	if err != nil {
+		logFail("Failed to expose output with envman, error: %#v | output: %s", err, cmdLog)
+	}
+	cmdLog, err := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_NAME", "--value", newVersionName).CombinedOutput()
+	if err != nil {
+		logFail("Failed to expose output with envman, error: %#v | output: %s", err, cmdLog)
+	}
 
 	if err := fileutil.WriteStringToFile(buildGradlePth, updatedBuildGradleContent); err != nil {
 		logFail("Failed to write build.gradle file, error: %s", err)
