@@ -96,19 +96,19 @@ func main() {
 			if err2 != nil {
 				logFail("Failed to expose output with envman, error: %#v | output: %s", err2, cmdLog2)
 			}
-		}
-		if newVersionName != "" {
-			updatedLine := strings.Replace(line, oldVersionName, newVersionName, -1)
-			updatedVersionNameNum++
+			if newVersionName != "" {
+				updatedLine := strings.Replace(line, oldVersionName, newVersionName, -1)
+				updatedVersionNameNum++
 
-			log.Printf("updating line (%d): %s -> %s", lineNum, line, updatedLine)
+				log.Printf("updating line (%d): %s -> %s", lineNum, line, updatedLine)
 
-			updatedLines = append(updatedLines, updatedLine)
-			cmdLog2, err2 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_NAME", "--value", newVersionName).CombinedOutput()
-			if err2 != nil {
-				logFail("Failed to expose output with envman, error: %#v | output: %s", err2, cmdLog2)
+				updatedLines = append(updatedLines, updatedLine)
+				cmdLog2, err2 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_NAME", "--value", newVersionName).CombinedOutput()
+				if err2 != nil {
+					logFail("Failed to expose output with envman, error: %#v | output: %s", err2, cmdLog2)
+				}
+				continue
 			}
-			continue
 		}
 
 		updatedLines = append(updatedLines, line)
