@@ -33,7 +33,7 @@ func main() {
 	newVersionName := os.Getenv("new_version_name")
 
 	if versionCodeOffset == "" {
-		versionCodeOffset=0
+		versionCodeOffset="0"
 	}
 
 	log.Infof("Configs:")
@@ -86,7 +86,7 @@ func main() {
 			}
 		}
 
-		oldVersionName := 0
+		oldVersionName := "0"
 		if match := versionNameRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
 			oldVersionName := match[1]
 		}
