@@ -85,10 +85,17 @@ func main() {
 				continue
 			}
 		}
+		cmdLog1, err1 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
+		if err1 != nil {
+			logFail("Failed to expose output with envman, error: %#v | output: %s", err1, cmdLog1)
+		}
 
-		oldVersionName := "0"
 		if match := versionNameRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
 			oldVersionName := match[1]
+			cmdLog2, err2 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_NAME", "--value", oldVersionName).CombinedOutput()
+			if err2 != nil {
+				logFail("Failed to expose output with envman, error: %#v | output: %s", err2, cmdLog2)
+			}
 		}
 		if newVersionName != "" {
 			updatedLine := strings.Replace(line, oldVersionName, newVersionName, -1)
@@ -97,9 +104,11 @@ func main() {
 			log.Printf("updating line (%d): %s -> %s", lineNum, line, updatedLine)
 
 			updatedLines = append(updatedLines, updatedLine)
+			cmdLog2, err2 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_NAME", "--value", newVersionName).CombinedOutput()
+			if err2 != nil {
+				logFail("Failed to expose output with envman, error: %#v | output: %s", err2, cmdLog2)
+			}
 			continue
-		} else {
-			newVersionName = oldVersionName
 		}
 
 		updatedLines = append(updatedLines, line)
@@ -118,14 +127,6 @@ func main() {
 	cmdLog, err := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_FILE_PATH", "--value", buildGradlePth).CombinedOutput()
 	if err != nil {
 		logFail("Failed to expose output with envman, error: %#v | output: %s", err, cmdLog)
-	}
-	cmdLog1, err1 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
-	if err1 != nil {
-		logFail("Failed to expose output with envman, error: %#v | output: %s", err1, cmdLog1)
-	}
-	cmdLog2, err2 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_NAME", "--value", newVersionName).CombinedOutput()
-	if err2 != nil {
-		logFail("Failed to expose output with envman, error: %#v | output: %s", err2, cmdLog2)
 	}
 
 	if err := fileutil.WriteStringToFile(buildGradlePth, updatedBuildGradleContent); err != nil {
