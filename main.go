@@ -79,7 +79,7 @@ func main() {
 				oldVersionCode := match[1]
 
 				iNewVersionCode, _ := strconv.Atoi(newVersionCode)
-				newVersionCode := strconv.Itoa(iNewVersionCode+versionCodeOffset)
+				newVersionCode=strconv.Itoa(iNewVersionCode+versionCodeOffset)
 				updatedLine := strings.Replace(line, oldVersionCode, newVersionCode, -1)
 				updatedVersionCodeNum++
 
