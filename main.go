@@ -4,6 +4,8 @@ import (
 	"os"
 	"os/exec"
 
+	"strconv"
+
 	"bufio"
 	"strings"
 
@@ -76,7 +78,9 @@ func main() {
 			if match := versionCodeRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
 				oldVersionCode := match[1]
 
-				newVersionCode+=versionCodeOffset
+				iNewVersionCode, err := strconv.Atoi(newVersionCode)
+				iVersionCodeOffset, err := strconv.Atoi(versionCodeOffset)
+				newVersionCode := strconv.Itoa(iNewVersionCode+iNewVersionCode)
 				updatedLine := strings.Replace(line, oldVersionCode, newVersionCode, -1)
 				updatedVersionCodeNum++
 
