@@ -76,7 +76,7 @@ func main() {
 
 		if match := versionCodeRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
 			oldVersionCode := match[1]
-			cmdLog1, err1 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
+			cmdLog1, err1 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", oldVersionCode).CombinedOutput()
 			if err1 != nil {
 				logFail("Failed to expose output with envman, error: %#v | output: %s", err1, cmdLog1)
 			}
