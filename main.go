@@ -32,11 +32,11 @@ func main() {
 	}
 
 	newVersionCode := os.Getenv("new_version_code")
-	versionCodeOffset := os.Getenv("version_code_offset")
 	newVersionName := os.Getenv("new_version_name")
 
-	if versionCodeOffset == "" {
-		versionCodeOffset="0"
+	versionCodeOffset, err := strconv.Atoi(os.Getenv("version_code_offset"))
+	if err != nil {
+		versionCodeOffset=0
 	}
 
 	log.Infof("Configs:")
@@ -78,9 +78,8 @@ func main() {
 			if match := versionCodeRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
 				oldVersionCode := match[1]
 
-				iNewVersionCode, err := strconv.Atoi(newVersionCode)
-				iVersionCodeOffset, err := strconv.Atoi(versionCodeOffset)
-				newVersionCode := strconv.Itoa(iNewVersionCode+iNewVersionCode)
+				iNewVersionCode := strconv.Atoi(newVersionCode)
+				newVersionCode := strconv.Itoa(iNewVersionCode+versionCodeOffset)
 				updatedLine := strings.Replace(line, oldVersionCode, newVersionCode, -1)
 				updatedVersionCodeNum++
 
