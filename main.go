@@ -24,6 +24,7 @@ func logFail(format string, v ...interface{}) {
 func main() {
 	// inputs
 	buildGradlePth := os.Getenv("build_gradle_path")
+	log.Errorf(buildGradlePth)
 	if err := input.ValidateIfPathExists(buildGradlePth); err != nil {
 		logFail("Issue with input build_gradle_path - %s", err)
 	}
