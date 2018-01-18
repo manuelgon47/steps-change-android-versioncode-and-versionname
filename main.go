@@ -78,7 +78,7 @@ func main() {
 			if match := versionCodeRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
 				oldVersionCode := match[1]
 
-				iNewVersionCode, err := strconv.Atoi(newVersionCode)
+				iNewVersionCode, _ := strconv.Atoi(newVersionCode)
 				newVersionCode := strconv.Itoa(iNewVersionCode+versionCodeOffset)
 				updatedLine := strings.Replace(line, oldVersionCode, newVersionCode, -1)
 				updatedVersionCodeNum++
