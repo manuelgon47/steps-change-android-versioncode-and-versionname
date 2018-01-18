@@ -119,13 +119,13 @@ func main() {
 	if err != nil {
 		logFail("Failed to expose output with envman, error: %#v | output: %s", err, cmdLog)
 	}
-	cmdLog, err := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
-	if err != nil {
-		logFail("Failed to expose output with envman, error: %#v | output: %s", err, cmdLog)
+	cmdLog1, err1 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
+	if err1 != nil {
+		logFail("Failed to expose output with envman, error: %#v | output: %s", err1, cmdLog1)
 	}
-	cmdLog, err := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_NAME", "--value", newVersionName).CombinedOutput()
-	if err != nil {
-		logFail("Failed to expose output with envman, error: %#v | output: %s", err, cmdLog)
+	cmdLog2, err2 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_NAME", "--value", newVersionName).CombinedOutput()
+	if err2 != nil {
+		logFail("Failed to expose output with envman, error: %#v | output: %s", err2, cmdLog2)
 	}
 
 	if err := fileutil.WriteStringToFile(buildGradlePth, updatedBuildGradleContent); err != nil {
