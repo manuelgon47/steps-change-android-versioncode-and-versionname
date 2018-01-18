@@ -74,10 +74,9 @@ func main() {
 
 		line := scanner.Text()
 
-		if newVersionCode != "" {
-			if match := versionCodeRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
-				oldVersionCode := match[1]
-
+		if match := versionCodeRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
+			oldVersionCode := match[1]
+			if newVersionCode != "" {
 				iNewVersionCode, _ := strconv.Atoi(newVersionCode)
 				newVersionCode=strconv.Itoa(iNewVersionCode+versionCodeOffset)
 				updatedLine := strings.Replace(line, oldVersionCode, newVersionCode, -1)
@@ -88,10 +87,10 @@ func main() {
 				updatedLines = append(updatedLines, updatedLine)
 				continue
 			}
-		}
-		cmdLog1, err1 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
-		if err1 != nil {
-			logFail("Failed to expose output with envman, error: %#v | output: %s", err1, cmdLog1)
+			cmdLog1, err1 := exec.Command("bitrise", "envman", "add", "--key", "GRADLE_VERSION_CODE", "--value", newVersionCode).CombinedOutput()
+			if err1 != nil {
+				logFail("Failed to expose output with envman, error: %#v | output: %s", err1, cmdLog1)
+			}
 		}
 
 		if match := versionNameRegexp.FindStringSubmatch(strings.TrimSpace(line)); len(match) == 2 {
